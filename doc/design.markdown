@@ -9,7 +9,7 @@ servlet development.
 
 The connection with SIP servlets is via a generated class. This class
 implements the SIP servlet interface, participates in servlet configurations,
-and implements the doRequest/doResponse methods.
+and implements the `doRequest`/`doResponse` methods.
 
 These two methods destructure the incoming request, extract the current state
 from the application session, and dispatch accordingly to generic functions.
