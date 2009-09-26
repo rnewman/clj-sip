@@ -66,14 +66,12 @@
             
      (let [response-fn#
            (fn [this#, #^SipServletResponse res#]
-             (println (str '~name ": RES " res#))
              (~response-method-name this#
                 (.getApplicationSession res#)
                 (.getStatus res#)
                 res#))]
 
        (defn ~'-doRequest [this#, #^SipServletRequest req#]
-         (println (str '~name ": REQ " req#))
          (~request-method-name this#
             (.getApplicationSession req#)
             req#))

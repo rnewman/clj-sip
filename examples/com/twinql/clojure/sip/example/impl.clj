@@ -3,6 +3,7 @@
 ;; Utility macros for defining request/response handlers.
 ;; We can't specialize on EchoServlet yet, because it's only available
 ;; when the other file has been compiled and is available on the classpath.
+;; Specialize on SipServlet instead.
 
 ;; Note that we have to do some fiddling with quote to get type annotations
 ;; to stick on the generated symbols.

@@ -12,9 +12,8 @@
        (<  x max)))
 
 (defmacro unless [conditional & forms]
-  `(if (not ~conditional)
-     (do
-       ~@forms)))
+  `(when (not ~conditional)
+     ~@forms))
 
 (defn base64-encode [#^bytes x]
   (let [#^BASE64Encoder encoder (new BASE64Encoder)]
