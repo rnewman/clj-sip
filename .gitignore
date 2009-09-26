@@ -1,0 +1,7 @@
+.*.swp
+*~
+classes/
+deploy/
+example_classes/
+example_dist/
+nailgun

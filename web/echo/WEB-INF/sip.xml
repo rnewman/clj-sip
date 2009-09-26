@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sip-app
+   PUBLIC "-//Java Community Process//DTD SIP Application 1.0//EN"
+   "http://www.jcp.org/dtd/sip-app_1_0.dtd">
+
+<sip-app>
+  <display-name>Clojure echo servlet</display-name>
+
+  <servlet>
+    <servlet-name>EchoServlet</servlet-name>
+    <display-name>EchoServlet</display-name>
+    <description>EchoServlet</description>
+    <servlet-class>com.twinql.clojure.sip.example.EchoServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>EchoServlet</servlet-name>
+    <pattern>
+      <equal><var>request.uri.user</var><value>echo</value></equal>
+    </pattern>
+  </servlet-mapping>
+    
+</sip-app>

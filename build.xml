@@ -1,0 +1,142 @@
+<project name="clj-sip-servlet" default="examplesar">
+
+  <property name="clojure.jar"         location="/opt/clojure/clojure.jar"/>
+  <property name="clojure.contrib.jar" location="/opt/clojure-contrib/clojure-contrib.jar"/>
+  
+  <available property="hasclojure" file="${clojure.jar}"/>
+  
+  <!-- Library. -->
+  <property name="src"     location="src"/>
+  <property name="build"   location="classes"/>
+  <property name="jarfile" location="deploy/clj-sip-servlet.jar"/>
+  
+  <!-- Example 'echo' servlet. -->
+  <property name="examplessrc"    location="examples"/>
+  <property name="examplebuild"   location="example_classes"/>
+  <property name="exampledist"    location="example_dist"/>
+  <property name="examplejarfile" location="deploy/clj-echo-servlet-code.jar"/>
+  <property name="examplesarfile" location="deploy/clj-echo-servlet.sar"/>
+  
+  <path id="baselibs.path">
+    <!-- Clojure. -->
+    <path location="${clojure.jar}"/>
+    <path location="${clojure.contrib.jar}"/>
+  </path>
+
+  <path id="sailfin.path">
+    <!-- SailFin. -->
+    <path location="lib/comms-appserv-rt.jar"/>
+    <path location="lib/appserv-rt.jar"/>
+    <path location="lib/appserv-ext.jar"/>
+    <path location="lib/ssa-api.jar"/>
+    <path location="lib/javaee.jar"/>
+    <path location="lib/appserv-deployment-client.jar"/>
+    <path location="lib/mail.jar"/>
+  </path>
+ 
+  <target name="init">
+    <tstamp/>
+    <mkdir dir="${build}"/>
+    <mkdir dir="${examplebuild}"/>
+    <mkdir dir="deploy"/>
+  </target>
+
+  <target name="clean" description="Remove generated files and directories.">
+    <delete dir="${build}"/>
+    <delete file="${jarfile}"/>
+    
+    <delete dir="${examplebuild}"/>
+    <delete dir="${exampledist}"/>
+    <delete file="${examplesarfile}"/>
+  </target>
+           
+  <target name="compile_clojure" depends="init"
+          description="Compile Clojure sources."
+          if="hasclojure">
+    <java classname="clojure.lang.Compile">
+      <classpath>
+        <path location="${build}"/>
+        <path location="${src}"/>
+        <path refid="baselibs.path"/>
+        <path refid="sailfin.path"/>
+      </classpath>
+      
+      <sysproperty key="clojure.compile.path" value="${build}"/>
+      <arg value="com.twinql.clojure.mime"/>
+      <arg value="com.twinql.clojure.util"/>
+      <arg value="com.twinql.clojure.hierarchy"/>
+      <arg value="com.twinql.clojure.sip.util"/>
+      <arg value="com.twinql.clojure.sip.responses"/>
+      <arg value="com.twinql.clojure.sip.processing"/>
+      <arg value="com.twinql.clojure.sip"/>
+      <arg value="com.twinql.clojure.doc"/>
+    </java>
+  </target>
+
+  <target name="jar" description="Create jar file." depends="compile_clojure">
+    <jar jarfile="${jarfile}">
+      <fileset dir="${src}" includes="**/*.clj"/>
+      <fileset dir="${build}" includes="**/*.class"/>
+      <manifest>
+        <attribute name="Class-Path" value="."/>
+      </manifest>
+    </jar>
+  </target>
+ 
+  <target name="compile_example" depends="jar"
+          description="Compile the simple example servlet."
+          if="hasclojure">
+    <java classname="clojure.lang.Compile">
+      <classpath>
+        <path location="${examplebuild}"/>
+        <path location="${examplessrc}"/>
+        <path refid="baselibs.path"/>
+        <path refid="sailfin.path"/>
+        <path location="${jarfile}"/>
+      </classpath>
+      
+      <sysproperty key="clojure.compile.path" value="${examplebuild}"/>
+      <arg value="com.twinql.clojure.sip.example.echo"/>
+      <arg value="com.twinql.clojure.sip.example.impl"/>
+    </java>
+  </target>
+ 
+  <!--
+    To avoid annoying classpath issues, the servlet class is the only class
+    stored directly in the .sar. The remaining classes compiled by Clojure
+    live in a separate jar in the classpath.
+    You can change this for your own applications if you wish.
+    -->
+  <target name="examplejar" description="Example servlet code jar." depends="compile_example">
+    <delete file="${examplejarfile}"/>
+    <jar jarfile="${examplejarfile}">
+      <fileset dir="${examplebuild}" excludes="**/*Servlet.class"/>
+    </jar>
+  </target>
+  
+  <target name="examplesar" description="Create example sar file." depends="examplejar">
+    <delete file="${examplesarfile}"/>
+    <delete dir="${exampledist}"/>
+    <mkdir dir="${exampledist}"/>
+    <mkdir dir="${exampledist}/WEB-INF"/>
+    <mkdir dir="${exampledist}/WEB-INF/classes"/>
+    <mkdir dir="${exampledist}/WEB-INF/lib"/>
+    <copy todir="${exampledist}/WEB-INF" verbose="true">
+      <fileset dir="web/echo/WEB-INF" excludes="**/*.swp"/>
+    </copy>
+    <copy todir="${exampledist}/WEB-INF/classes" verbose="true">
+      <fileset dir="${examplebuild}" includes="**/*Servlet.class"/>
+    </copy>
+    
+    <jar jarfile="${examplesarfile}">
+      <fileset dir="${exampledist}">
+        <include name="**/*"/>
+      </fileset>
+      <manifest>
+        <attribute name="Main-Class" value="com.twinql.clojure.sip.example.echo.EchoServlet"/>
+        <attribute name="Created-By" value="rnewman@twinql.com"/>
+        <attribute name="Class-Path" value="classes"/>
+      </manifest>
+    </jar>
+  </target>
+</project>
