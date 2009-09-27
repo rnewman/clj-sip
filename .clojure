@@ -1,1 +1,1 @@
-example_classes:classes:appserv-deployment-client.jar:appserv-ext.jar:appserv-rt.jar:comms-appserv-rt.jar:javaee.jar:mail.jar:ssa-api.jar
+deploy/clj-sip-servlet.jar:example_classes:classes:lib/appserv-deployment-client.jar:lib/appserv-ext.jar:lib/appserv-rt.jar:lib/comms-appserv-rt.jar:lib/javaee.jar:lib/mail.jar:lib/ssa-api.jar
