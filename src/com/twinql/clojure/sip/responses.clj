@@ -78,6 +78,8 @@
 (def *sip-code-reverse-map*
   (map-invert *sip-code-map*))
 
+;;; N.B., when *sip-hierarchy* is immigrated into com.twinql.clojure.sip, this
+;;; one remains untouched! Be careful which you use.
 (def *sip-hierarchy*
   (ref 
     (deriving
