@@ -2,13 +2,38 @@
 
 This is a library for writing SIP servlets in Clojure.
 
+Its primary goal is to simplify the writing of *stateful* SIP servlets, though
+it can be applied to stateless servlets.
+
+In short: a generated class extends `SipServlet`, dispatching incoming requests
+and responses to Clojure multimethods. This allows you to write handler methods
+for particular states, SIP methods, and SIP responses, rather than `switch`ing
+on these values within a single `doInvite`-style method.
+
+Abstraction is introduced as both your states and the SIP methods and responses
+are members of *hierarchies* — for example, there are nodes in the hierarchy
+for “subsequent requests”, “request methods defined in RFC 3265”, “responses
+that should result in a retry with credentials”, and so on. You can also define
+your own relationships to extend this default hierarchy.
+
+You can thus handle arbitrary swathes of messages using the hierarchy without
+verbose switching logic. Similarly, you are encouraged to introduce a hierarchy
+in your states; this allows you to, *e.g.*, write separate methods for
+in-dialog and out-of-dialog `INVITE`s without being explicit about which states
+are in or out of a dialog.
+
 In the `doc` directory you'll find some notes on its design (almost certainly
 due for revision), as well as a little code for generating
 [GraphViz](http://graphviz.org "GraphViz") dot files from Clojure hierarchies,
 and checking that states have appropriate handlers defined.
  
-There is an example servlet in the repository (which simply responds to a
-'ping').
+There is an example servlet in the repository (which simply responds to an
+`INVITE` with a 200, waits for an `ACK`, then sends a `BYE`).
+
+This is not a complicated or large library: it simply encodes a particular way
+of doing things that has been shown to be convenient, as well as saving you the
+effort of building a hierarchy of SIP requests and responses. Feedback is most
+welcome.
 
 ## Dependencies
 
